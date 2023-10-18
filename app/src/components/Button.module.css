@@ -1,0 +1,20 @@
+.button {
+  border-radius: 10px;
+  border-style: solid;
+  border-width: 2px;
+  border-color: var(--color-text-bright);
+  color: var(--color-text-bright);
+  padding: 8px;
+  min-height: 1em;
+  transition: all 0.2s linear;
+}
+
+.disabled {
+  color: var(--color-text-dimmed);
+  border-color: var(--color-text-dimmed);
+}
+
+.active {
+  color: var(--color-background);
+  background: var(--color-text-bright);
+}

@@ -1,4 +1,4 @@
-import { createSignal } from "solid-js";
+import { createSignal, JSX } from "solid-js";
 import styles from "./Button.module.css";
 
 export interface IButton {
@@ -6,6 +6,7 @@ export interface IButton {
   value: string;
   active?: boolean;
   disabled?: boolean;
+  children: JSX.Element;
 }
 
 export default function Button(props: IButton) {
@@ -36,7 +37,7 @@ export default function Button(props: IButton) {
         }
       }}
     >
-      {props.value.toUpperCase()}
+      {props.children}
     </div>
   );
 }

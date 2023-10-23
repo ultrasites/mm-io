@@ -1,8 +1,13 @@
 /* @refresh reload */
 import { render } from "solid-js/web";
+import "./shared.css";
 
-import "./index.css";
 import App from "./App";
+
+if (process.env.NODE_ENV === "development") {
+  import("./index.css");
+  import("./fontawesome.css");
+}
 
 document.addEventListener(
   process.env.NODE_ENV === "development"

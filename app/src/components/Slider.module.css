@@ -1,5 +1,6 @@
 .slider {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 60px;
   gap: 10px;
   padding: 20px 0;
 }

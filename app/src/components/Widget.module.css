@@ -1,0 +1,18 @@
+.widget {
+  background-color: #101010;
+  border-radius: 10px;
+  padding: 9px;
+  color: var(--color-text-bright);
+  display: grid;
+  grid-template-columns: auto 100px;
+  justify-content: space-between;
+  text-align: start;
+  gap: 20px;
+  min-width: 250px;
+  min-height: 100px;
+}
+
+.position {
+  color: var(--color-text-dimmed);
+  font-size: 14px;
+}

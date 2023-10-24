@@ -7,6 +7,8 @@
   padding: 8px;
   min-height: 1em;
   transition: all 0.2s linear;
+  display: flex;
+  justify-content: center;
 }
 
 .disabled {

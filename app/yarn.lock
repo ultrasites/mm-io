@@ -2,6 +2,13 @@
 # yarn lockfile v1
 
 
+"@amoutonbrady/solid-i18n@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@amoutonbrady/solid-i18n/-/solid-i18n-0.4.0.tgz#ccb138b58085d2a900fe169aa4a5311dd1eab613"
+  integrity sha512-r8tnmolZ+Fjy0SgideVmj0H4vh7Nfko/Fr1crRptrXsgoU1PftyG7m6MOAoCyG+ax2xy+Q5rvtBlJ6leIUD7WQ==
+  dependencies:
+    solid-js "^1.0.0"
+
 "@ampproject/remapping@^2.2.0":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@ampproject/remapping/-/remapping-2.2.1.tgz#99e8e11851128b8702cd57c33684f1d0f260b630"
@@ -477,6 +484,13 @@
   dependencies:
     "@babel/types" "^7.20.7"
 
+"@types/node@^20.8.7":
+  version "20.8.7"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.8.7.tgz#ad23827850843de973096edfc5abc9e922492a25"
+  integrity sha512-21TKHHh3eUHIi2MloeptJWALuCu5H7HQTdTrWIFReA8ad+aggoX+lRes3ex7/FtpC+sVUpFMQ+QTfYr74mruiQ==
+  dependencies:
+    undici-types "~5.25.1"
+
 ansi-styles@^3.2.1:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-3.2.1.tgz#41fbb20243e50b12be0f04b8dedbf07520ce841d"
@@ -703,6 +717,19 @@ seroval@^0.10.4:
   resolved "https://registry.yarnpkg.com/seroval/-/seroval-0.10.4.tgz#7c47761d7651b2471bcdb44906213df4114bb1d0"
   integrity sha512-TdaE9JkoATjKu+vjwllieX8zWyBTUVxbgWDnOsDJFfmKbM7vLSukuCXuD3pO3kkCtX4daywOW8ps2VCdPhS8/w==
 
+seroval@^0.11.6:
+  version "0.11.6"
+  resolved "https://registry.yarnpkg.com/seroval/-/seroval-0.11.6.tgz#ec5ef38a7ac34cac116f6028d505c163c3767973"
+  integrity sha512-Lhy+94CNcNza6d0vM4sQKLsaLaX39q0ELqIBc7DkdiFljI8Q387Yb+xKgLxRWXs7uuHRu/ZcJ64xfVJ0Bj4LPg==
+
+solid-js@^1.0.0:
+  version "1.8.3"
+  resolved "https://registry.yarnpkg.com/solid-js/-/solid-js-1.8.3.tgz#cf0776b330ec136d4a5885a7459094ad40047c3a"
+  integrity sha512-S7ztgPI6X4tUaWmhZe3aDx0E9F6FGxXVU8NsocrPqqUbxHoFi8eTPlDMcenOlXuo2ITQ97j2URaj0StfJci4KQ==
+  dependencies:
+    csstype "^3.1.0"
+    seroval "^0.11.6"
+
 solid-js@^1.7.8:
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/solid-js/-/solid-js-1.8.1.tgz#0568041f6dfca099ae48b94b2de1711974d25694"
@@ -741,6 +768,11 @@ typescript@^5.0.2:
   version "5.2.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.2.2.tgz#5ebb5e5a5b75f085f22bc3f8460fba308310fa78"
   integrity sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==
+
+undici-types@~5.25.1:
+  version "5.25.3"
+  resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-5.25.3.tgz#e044115914c85f0bcbb229f346ab739f064998c3"
+  integrity sha512-Ga1jfYwRn7+cP9v8auvEXN1rX3sWqlayd4HP7OKk4mZWylEmu3KzXDUGrQUN6Ol7qo1gPvB2e5gX6udnyEPgdA==
 
 update-browserslist-db@^1.0.13:
   version "1.0.13"

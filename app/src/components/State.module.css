@@ -1,0 +1,16 @@
+.success {
+  color: var(--color-mmio-green);
+}
+
+.warning {
+  color: var(--color-mmio-orange);
+}
+
+.error {
+  color: var(--color-mmio-red);
+}
+
+.value {
+  margin-left: 5px;
+  color: var(--color-text-dimmed);
+}

@@ -3,7 +3,6 @@ import styles from "./Button.module.css";
 
 export interface IButton {
   onClick: () => Promise<void>;
-  value: string;
   active?: boolean;
   disabled?: boolean;
   children: JSX.Element;
@@ -19,7 +18,7 @@ export default function Button(props: IButton) {
       classList={{
         [styles.button]: true,
         [styles.active]: props.active || touched(),
-        [styles.disabled]: disabled()
+        [styles.disabled]: disabled(),
       }}
       onTouchStart={() => {
         if (!disabled()) {

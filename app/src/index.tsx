@@ -3,6 +3,8 @@ import { render } from "solid-js/web";
 import "./shared.css";
 
 import App from "./App";
+import { I18nProvider } from "@amoutonbrady/solid-i18n";
+import { dictionary } from "./i18n";
 
 if (process.env.NODE_ENV === "development") {
   import("./index.css");
@@ -15,6 +17,14 @@ document.addEventListener(
     : "DOM_LOADED_FOR_MMIO",
   () => {
     const root = document.getElementById("mm-io-root");
-    render(() => <App />, root!);
+    render(
+      () => (
+        //@ts-ignore
+        <I18nProvider dict={dictionary} locale={navigator.language}>
+          <App />
+        </I18nProvider>
+      ),
+      root!
+    );
   }
 );

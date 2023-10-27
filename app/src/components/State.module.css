@@ -1,3 +1,7 @@
+.state {
+  font-size: 15px;
+}
+
 .success {
   color: var(--color-mmio-green);
 }

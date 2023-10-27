@@ -20,7 +20,12 @@ document.addEventListener(
     render(
       () => (
         //@ts-ignore
-        <I18nProvider dict={dictionary} locale={navigator.language}>
+        <I18nProvider
+          dict={dictionary}
+          locale={navigator.language
+            .substring(navigator.language.indexOf("-") + 1)
+            .toLowerCase()}
+        >
           <App />
         </I18nProvider>
       ),

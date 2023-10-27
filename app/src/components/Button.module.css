@@ -4,7 +4,7 @@
   border-width: 2px;
   border-color: var(--color-text-bright);
   color: var(--color-text-bright);
-  padding: 8px;
+  padding: 13px;
   min-height: 1em;
   transition: all 0.2s linear;
   display: flex;

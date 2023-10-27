@@ -18,7 +18,7 @@ export default function Button(props: IButton) {
       classList={{
         [styles.button]: true,
         [styles.active]: props.active || touched(),
-        [styles.disabled]: disabled(),
+        [styles.disabled]: disabled()
       }}
       onTouchStart={() => {
         if (!disabled()) {
@@ -29,7 +29,7 @@ export default function Button(props: IButton) {
         setTouched(false);
       }}
       onClick={async () => {
-        if (!disabled()) {
+        if (!disabled() && !props.active) {
           setDisabled(true);
           await props.onClick();
           setDisabled(false);

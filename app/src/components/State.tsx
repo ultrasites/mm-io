@@ -23,6 +23,7 @@ export default function State(props: IState) {
     <>
       <span
         classList={{
+          [styles.state]: true,
           [styles.success]: props.state === "on" || props.state === "open",
           [styles.warning]:
             props.state === "slidingDown" ||
@@ -31,12 +32,21 @@ export default function State(props: IState) {
           [styles.error]:
             props.state === "error" ||
             props.state === "off" ||
-            props.state === "closed",
+            props.state === "closed"
         }}
       >
         {t(props.state)}
       </span>
-      {props.value && <span class={styles.value}>{props.value}</span>}
+      {props.value && (
+        <span
+          classList={{
+            [styles.state]: true,
+            [styles.value]: true
+          }}
+        >
+          {props.value}
+        </span>
+      )}
     </>
   );
 }

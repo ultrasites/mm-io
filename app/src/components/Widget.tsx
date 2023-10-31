@@ -2,6 +2,8 @@ import { JSX } from "solid-js/jsx-runtime";
 import Icon from "./Icon";
 import styles from "./Widget.module.css";
 import State from "./State";
+import { onMount, useContext } from "solid-js";
+import { AppContext } from "./AppProvider";
 
 export interface WidgetBase<T extends WidgetType> {
   name: string;
@@ -31,6 +33,11 @@ export interface IWidget {
 }
 
 export default function Widget(props: IWidget) {
+  const { event } = useContext(AppContext);
+
+  onMount(() => {
+    event?.emit("registerWidget", props.config.topics);
+  });
   return (
     <div class={styles.widget}>
       <div class={styles.content}>

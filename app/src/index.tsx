@@ -5,6 +5,7 @@ import "./shared.css";
 import App from "./App";
 import { I18nProvider } from "@amoutonbrady/solid-i18n";
 import { dictionary } from "./i18n";
+import { AppContext, AppProvider } from "./components/AppProvider";
 
 if (process.env.NODE_ENV === "development") {
   import("./index.css");
@@ -26,7 +27,9 @@ document.addEventListener(
             .substring(navigator.language.indexOf("-") + 1)
             .toLowerCase()}
         >
-          <App />
+          <AppProvider>
+            <App />
+          </AppProvider>
         </I18nProvider>
       ),
       root!

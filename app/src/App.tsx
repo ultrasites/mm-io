@@ -11,7 +11,7 @@ function App() {
     position: "Schiebetür (links)",
     quickIncludes: { topic1: "foo", topic2: "bar" },
     topics: { measurement: "bla" },
-    type: "SHUTTER"
+    type: "SHUTTER",
   };
 
   const [slider] = createSlider({ loop: true });

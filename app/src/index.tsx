@@ -5,7 +5,7 @@ import "./shared.css";
 import App from "./App";
 import { I18nProvider } from "@amoutonbrady/solid-i18n";
 import { dictionary } from "./i18n";
-import { AppContext, AppProvider } from "./components/AppProvider";
+import { AppProvider } from "./components/AppProvider";
 
 if (process.env.NODE_ENV === "development") {
   import("./index.css");

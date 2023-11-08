@@ -4,12 +4,12 @@ import styles from "./Widget.module.css";
 import State from "./State";
 import { onMount, useContext } from "solid-js";
 import { AppContext } from "./AppProvider";
+import { tap } from "rxjs";
 
 export interface WidgetBase<T extends WidgetType> {
   name: string;
   position?: string;
   type: T;
-  topics: Record<string, string>;
 }
 
 export interface WidgetQuickControl<T extends WidgetType> {
@@ -21,6 +21,7 @@ export interface WidgetQuickControl<T extends WidgetType> {
 }
 
 export type WidgetType = "DIMMED_LIGHT" | "SHUTTER" | "GARAGE_GATE" | "INFO";
+export type WidgetControlType = "TOGGLE" | "BUTTON" | "RANGE";
 
 export type WidgetConfig<T extends WidgetType> = T extends "INFO"
   ? WidgetBase<T>
@@ -33,10 +34,17 @@ export interface IWidget {
 }
 
 export default function Widget(props: IWidget) {
-  const { event } = useContext(AppContext);
+  const { mqtt } = useContext(AppContext);
 
   onMount(() => {
-    event?.emit("registerWidget", props.config.topics);
+    mqtt!.messages$
+      .pipe(
+        tap((vlaue) => {
+          console.log(vlaue.message.toString());
+          return vlaue;
+        })
+      )
+      .subscribe();
   });
   return (
     <div class={styles.widget}>

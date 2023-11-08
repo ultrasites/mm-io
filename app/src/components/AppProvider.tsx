@@ -1,15 +1,14 @@
 import { createContext, JSX } from "solid-js";
-import { Event } from "../services/event";
+import { MQTT } from "../services/mqtt";
 
-export const AppContext = createContext<{ event: undefined | Event }>({
-  event: undefined
+export const AppContext = createContext<{ mqtt: MQTT | undefined }>({
+  mqtt: undefined,
 });
 
 export function AppProvider(props: { children: JSX.Element }) {
-  const value = {
-    event: new Event({ registerWidget: null })
-  };
+  const mqtt = new MQTT();
+
   return (
-    <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
+    <AppContext.Provider value={{ mqtt }}>{props.children}</AppContext.Provider>
   );
 }

@@ -1,7 +1,7 @@
 import { useI18n } from "@amoutonbrady/solid-i18n";
 import styles from "./State.module.css";
 
-export type State =
+export type StateType =
   | "on"
   | "off"
   | "slidingDown"
@@ -9,11 +9,11 @@ export type State =
   | "closed"
   | "open"
   | "connecting"
-  | "notConnected"
+  | "idle"
   | "error";
 
 export interface IState {
-  state: State;
+  state: StateType;
   value?: string;
 }
 
@@ -32,7 +32,7 @@ export default function State(props: IState) {
           [styles.error]:
             props.state === "error" ||
             props.state === "off" ||
-            props.state === "closed"
+            props.state === "closed",
         }}
       >
         {t(props.state)}
@@ -41,7 +41,7 @@ export default function State(props: IState) {
         <span
           classList={{
             [styles.state]: true,
-            [styles.value]: true
+            [styles.value]: true,
           }}
         >
           {props.value}

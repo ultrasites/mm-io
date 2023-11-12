@@ -1,15 +1,15 @@
 import * as mqtt from "mqtt/dist/mqtt.min";
-import { Subject } from "rxjs";
+import { Subject, filter, map, distinctUntilChanged } from "rxjs";
 
 export interface MqttMessage {
   topic: string;
-  message: Buffer;
+  message: string;
 }
 
 export class MQTT {
   private client: mqtt.MqttClient;
-  private subscribedTopics: string[] = [];
   private messages = new Subject<MqttMessage>();
+  subscribedTopics: string[] = [];
 
   messages$ = this.messages.asObservable();
 
@@ -26,7 +26,7 @@ export class MQTT {
     });
 
     this.client.on("message", (topic, message) => {
-      this.messages.next({ topic, message });
+      this.messages.next({ topic, message: message.toString() });
     });
   }
 
@@ -42,5 +42,13 @@ export class MQTT {
   unsubcribe(topic: string) {
     this.client.unsubscribe(topic);
     delete this.subscribedTopics[this.subscribedTopics.indexOf(topic)];
+  }
+
+  observe<T>(oTopic: string) {
+    return this.messages$.pipe(
+      filter(({ topic }) => topic === oTopic),
+      distinctUntilChanged((prev, cur) => prev.message === cur.message),
+      map(({ message }) => (message ? JSON.parse(message) : message) as T)
+    );
   }
 }

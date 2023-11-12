@@ -12,6 +12,18 @@
   min-height: 100px;
 }
 
+.info {
+  grid-template-columns: 1fr;
+}
+
+.infoContent {
+  justify-content: start;
+}
+
+.actionContent {
+  justify-content: space-between;
+}
+
 .position {
   color: var(--color-text-dimmed);
   font-size: 14px;

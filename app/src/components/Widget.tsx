@@ -10,11 +10,13 @@ import {
   isInfoWidget,
   isPhone,
   generateTopic,
-  Device,
+  Device
 } from "./Widget.utils";
 import { Subscription, map } from "rxjs";
 import PhoneInfo from "./widget/info/PhoneInfo";
 import ToggleButton from "./ToggleButton";
+import Button from "./Button";
+import Modal from "./Modal";
 
 export interface IWidget {
   onClick?: () => void;
@@ -29,8 +31,9 @@ export default function Widget(props: IWidget) {
   const config = props.config;
 
   const [connected, setConnected] = createSignal<IconMode>("warning");
+  const [modal, setModal] = createSignal<boolean>(false);
   const [state, setState] = createSignal<{ state: StateType; value?: string }>({
-    state: "connecting",
+    state: "connecting"
   });
 
   const connected$ = mqtt!
@@ -43,15 +46,15 @@ export default function Widget(props: IWidget) {
     );
 
   onMount(() => {
-    Object.values(config.topics).map((topic) =>
-      mqtt?.subscribe(generateTopic(config.id, topic))
+    Object.values(config.topics).map(
+      (topic) => mqtt?.subscribe(generateTopic(config.id, topic))
     );
     subscription.add(connected$.subscribe());
   });
 
   onCleanup(() => {
-    Object.values(config.topics).map((topic) =>
-      mqtt?.unsubcribe(generateTopic(config.id, topic))
+    Object.values(config.topics).map(
+      (topic) => mqtt?.unsubcribe(generateTopic(config.id, topic))
     );
     subscription?.unsubscribe();
   });
@@ -59,38 +62,67 @@ export default function Widget(props: IWidget) {
   const renderQuickIncludes = () => {
     switch (config.type) {
       case "PLUG":
-        return <ToggleButton onClick={async (isActive) => {}} />;
+        return <ToggleButton onClick={async (_isActive) => {}} />;
+      case "SHUTTER":
+        return (
+          <>
+            <Button onClick={async () => {}}>
+              <i class="fa-chevron-up fa-solid" />
+            </Button>
+            <Button onClick={async () => {}}>
+              <i class="fa-chevron-down fa-solid" />
+            </Button>
+          </>
+        );
+      case "DIMMED_LIGHT":
+        return <ToggleButton onClick={async (_isActive) => {}} />;
+      case "GARAGE_GATE":
+        return (
+          <>
+            <Button onClick={async () => {}}>
+              <i class="fa-chevron-up fa-solid" />
+            </Button>
+            <Button onClick={async () => {}}>
+              <i class="fa-chevron-down fa-solid" />
+            </Button>
+          </>
+        );
     }
   };
 
   return (
-    <div
-      classList={{
-        [styles.widget]: true,
-        [styles.info]: isInfo,
-      }}
-    >
+    <>
       <div
+        onClick={() => setModal(true)}
         classList={{
-          [styles.content]: true,
-          // [styles.infoContent]: isInfo,
-          // [styles.actionContent]: !isInfo,
+          [styles.widget]: true,
+          [styles.info]: isInfo
         }}
       >
-        <div>
+        <div
+          classList={{
+            [styles.content]: true
+            // [styles.infoContent]: isInfo,
+            // [styles.actionContent]: !isInfo,
+          }}
+        >
           <div>
-            {config.name} <Icon icon="wifi" mode={connected()} style="solid" />
+            <div>
+              {config.name}{" "}
+              <Icon icon="wifi" mode={connected()} style="solid" />
+            </div>
+            <div class={styles.position}>{config.position}</div>
           </div>
-          <div class={styles.position}>{config.position}</div>
+          <div>
+            {isPhone(config) && <PhoneInfo config={config} />}
+            {!isInfo && <State state={state().state} value={state().value} />}
+          </div>
         </div>
-        <div>
-          {isPhone(config) && <PhoneInfo config={config} />}
-          {!isInfo && <State state={state().state} value={state().value} />}
-        </div>
+        {!isInfo && (
+          <div class={styles.quickIncludes}>{renderQuickIncludes()}</div>
+        )}
       </div>
-      {!isInfo && (
-        <div class={styles.quickIncludes}>{renderQuickIncludes()}</div>
-      )}
-    </div>
+      {modal() && <Modal onClickBackground={() => setModal(false)}>test</Modal>}
+    </>
   );
 }

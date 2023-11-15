@@ -14,17 +14,29 @@ function App() {
 
   const config = defaultConfig;
 
-  const maxItemOnSlide = 8;
-  const countSlides = Math.round(defaultConfig.length / maxItemOnSlide);
+  const maxItemOnSlide = 4;
+  const countSlides = Math.ceil(defaultConfig.length / maxItemOnSlide);
 
   return (
     <>
       <div ref={ref!}>
-        <div class={styles.slide}>
-          <For each={config} fallback={"loading..."}>
-            {(widgetConfig) => <Widget config={widgetConfig} />}
-          </For>
-        </div>
+        {[...Array(countSlides).keys()].map((_, idx) => {
+          return (
+            <div class={styles.slide}>
+              <For
+                each={config.filter((_, configIdx) => {
+                  return (
+                    configIdx < idx + 1 * maxItemOnSlide &&
+                    configIdx >= idx + 1 * maxItemOnSlide - maxItemOnSlide
+                  );
+                })}
+                fallback={"loading..."}
+              >
+                {(widgetConfig) => <Widget config={widgetConfig} />}
+              </For>
+            </div>
+          );
+        })}
       </div>
     </>
   );

@@ -1,10 +1,43 @@
-import "./App.css";
-import ToggleButton from "./components/ToggleButton";
+import { createSlider } from "solid-slider";
+import { For, onMount } from "solid-js";
+import Widget from "./components/Widget";
+import styles from "./App.module.css";
+import "solid-slider/slider.css";
+import { defaultConfig } from "./defaultConfig";
 
 function App() {
+  const [slider] = createSlider({ loop: true });
+  let ref: HTMLDivElement;
+  onMount(() => {
+    slider(ref);
+  });
+
+  const config = defaultConfig;
+
+  const maxItemOnSlide = 4;
+  const countSlides = Math.ceil(defaultConfig.length / maxItemOnSlide);
+
   return (
     <>
-      <ToggleButton onClick={(isActive) => console.log(isActive)} />
+      <div ref={ref!}>
+        {[...Array(countSlides).keys()].map((_, idx) => {
+          return (
+            <div class={styles.slide}>
+              <For
+                each={config.filter((_, configIdx) => {
+                  return (
+                    configIdx < idx + 1 * maxItemOnSlide &&
+                    configIdx >= idx + 1 * maxItemOnSlide - maxItemOnSlide
+                  );
+                })}
+                fallback={"loading..."}
+              >
+                {(widgetConfig) => <Widget config={widgetConfig} />}
+              </For>
+            </div>
+          );
+        })}
+      </div>
     </>
   );
 }

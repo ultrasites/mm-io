@@ -10,13 +10,15 @@ import {
   isInfoWidget,
   isPhone,
   generateTopic,
-  Device
+  Device,
 } from "./Widget.utils";
 import { Subscription, map } from "rxjs";
 import PhoneInfo from "./widget/info/PhoneInfo";
 import ToggleButton from "./ToggleButton";
 import Button from "./Button";
 import Modal from "./Modal";
+import { phoneRing$ } from "./widget/info/PhoneInfo.ovservables";
+import PhoneHistory from "./widget/info/PhoneHistory";
 
 export interface IWidget {
   onClick?: () => void;
@@ -24,7 +26,7 @@ export interface IWidget {
 }
 
 export default function Widget(props: IWidget) {
-  const { mqtt } = useContext(AppContext);
+  const { mqtt, event } = useContext(AppContext);
   const subscription: Subscription = new Subscription();
 
   const isInfo = isInfoWidget(props.config.type);
@@ -33,8 +35,9 @@ export default function Widget(props: IWidget) {
   const [connected, setConnected] = createSignal<IconMode>("warning");
   const [modal, setModal] = createSignal<boolean>(false);
   const [state, setState] = createSignal<{ state: StateType; value?: string }>({
-    state: "connecting"
+    state: "connecting",
   });
+  const [phoneNumber, setPhoneNumber] = createSignal<string>("");
 
   const connected$ = mqtt!
     .observe<boolean>(generateTopic(config.id, config.topics.connected))
@@ -46,18 +49,44 @@ export default function Widget(props: IWidget) {
     );
 
   onMount(() => {
-    Object.values(config.topics).map(
-      (topic) => mqtt?.subscribe(generateTopic(config.id, topic))
+    Object.values(config.topics).map((topic) =>
+      mqtt?.subscribe(generateTopic(config.id, topic))
     );
     subscription.add(connected$.subscribe());
+
+    if (isPhone(config)) {
+      subscription.add(
+        phoneRing$(mqtt!, config, (ring, phoneNumber) => {
+          setPhoneNumber(ring ? phoneNumber : "");
+          setModal(ring);
+        }).subscribe()
+      );
+    }
+
+    event?.on("showModal", (payload) => {
+      console.log(payload);
+      return setModal(payload);
+    });
   });
 
   onCleanup(() => {
-    Object.values(config.topics).map(
-      (topic) => mqtt?.unsubcribe(generateTopic(config.id, topic))
+    Object.values(config.topics).map((topic) =>
+      mqtt?.unsubcribe(generateTopic(config.id, topic))
     );
     subscription?.unsubscribe();
   });
+
+  const renderModal = () => {
+    if (isPhone(config)) {
+      return (
+        <PhoneInfo
+          config={config}
+          mode="incomingCall"
+          phoneNumber={phoneNumber()}
+        />
+      );
+    }
+  };
 
   const renderQuickIncludes = () => {
     switch (config.type) {
@@ -93,15 +122,15 @@ export default function Widget(props: IWidget) {
   return (
     <>
       <div
-        onClick={() => setModal(true)}
+        onClick={() => !isPhone(config) && setModal(true)}
         classList={{
           [styles.widget]: true,
-          [styles.info]: isInfo
+          [styles.info]: isInfo,
         }}
       >
         <div
           classList={{
-            [styles.content]: true
+            [styles.content]: true,
             // [styles.infoContent]: isInfo,
             // [styles.actionContent]: !isInfo,
           }}
@@ -114,7 +143,7 @@ export default function Widget(props: IWidget) {
             <div class={styles.position}>{config.position}</div>
           </div>
           <div>
-            {isPhone(config) && <PhoneInfo config={config} />}
+            {isPhone(config) && <PhoneHistory config={config} />}
             {!isInfo && <State state={state().state} value={state().value} />}
           </div>
         </div>
@@ -122,7 +151,9 @@ export default function Widget(props: IWidget) {
           <div class={styles.quickIncludes}>{renderQuickIncludes()}</div>
         )}
       </div>
-      {modal() && <Modal onClickBackground={() => setModal(false)}>test</Modal>}
+      {modal() && (
+        <Modal onClickBackground={() => setModal(false)}>{renderModal()}</Modal>
+      )}
     </>
   );
 }

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@amoutonbrady/solid-i18n": "^0.4.0",
+    "dayjs": "^1.11.10",
     "mqtt": "^5.1.4",
     "rxjs": "^7.8.1",
     "solid-js": "^1.7.8",

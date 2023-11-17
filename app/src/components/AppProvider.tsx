@@ -1,7 +1,9 @@
 import { createContext, JSX } from "solid-js";
 import { MQTT } from "../services/mqtt";
 
-export const AppContext = createContext<{ mqtt: MQTT | undefined }>({
+export const AppContext = createContext<{
+  mqtt: MQTT | undefined;
+}>({
   mqtt: undefined,
 });
 

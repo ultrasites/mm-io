@@ -34,10 +34,15 @@ export type WidgetConfig<T extends WidgetType, U extends Device> = WidgetBase<
 > &
   WidgetMqttConfig<U>;
 
-export const isPhone = (
+export const isFritzboxPhone = (
   config: WidgetConfig<WidgetType, Device>
 ): config is WidgetConfig<"PHONE", "Fritzbox"> =>
   (config as WidgetConfig<"PHONE", "Fritzbox">).topics.ring !== undefined;
+
+export const isShelly = (
+  config: WidgetConfig<WidgetType, Device>
+): config is WidgetConfig<WidgetType, "Shelly"> =>
+  (config as WidgetConfig<WidgetType, "Shelly">).topics.command !== undefined;
 
 export const isInfoWidget = (type: WidgetType) => type === "PHONE";
 

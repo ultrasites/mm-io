@@ -8,7 +8,13 @@ export interface IModal {
 
 export default function Modal(props: IModal) {
   return (
-    <div onClick={() => props.onClickBackground()} class={styles.background}>
+    <div
+      onClick={(e) => {
+        e.stopImmediatePropagation();
+        return props.onClickBackground();
+      }}
+      class={styles.background}
+    >
       <div class={styles.content}>{props.children}</div>
     </div>
   );

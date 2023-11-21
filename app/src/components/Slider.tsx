@@ -3,6 +3,7 @@ import styles from "./Slider.module.css";
 
 export interface ISlider {
   onChange: (percent: number) => void;
+  onInput: (percent: number) => void;
   value?: number;
 }
 
@@ -11,7 +12,7 @@ export default function Slider(props: ISlider) {
   return (
     <div
       classList={{
-        [styles.slider]: true
+        [styles.slider]: true,
       }}
     >
       <input
@@ -20,6 +21,7 @@ export default function Slider(props: ISlider) {
         }}
         onInput={(event) => {
           setPercent(event.target.valueAsNumber);
+          props.onInput(+event.target.value);
         }}
         type="range"
         min="0"

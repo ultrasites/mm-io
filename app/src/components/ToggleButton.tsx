@@ -15,9 +15,10 @@ export default function ToggleButton(props: IToggleButton) {
         [styles.button]: true,
         [styles.buttonOn]: toggle(),
         [styles.buttonDisabled]: disabled(),
-        [styles.buttonActiveDisabled]: toggle() && disabled()
+        [styles.buttonActiveDisabled]: toggle() && disabled(),
       }}
-      onClick={async () => {
+      onClick={async (e) => {
+        e.stopImmediatePropagation();
         if (!disabled()) {
           setDisabled(true);
           await props.onClick(!toggle());
@@ -33,7 +34,7 @@ export default function ToggleButton(props: IToggleButton) {
             [styles.circleOn]: toggle(),
             [styles.circleOff]: !toggle(),
             [styles.circleDisabled]: disabled(),
-            [styles.circleActiveDisabled]: toggle() && disabled()
+            [styles.circleActiveDisabled]: toggle() && disabled(),
           }}
         ></div>
       </div>

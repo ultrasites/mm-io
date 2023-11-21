@@ -8,9 +8,10 @@ import {
   WidgetConfig,
   WidgetType,
   isInfoWidget,
-  isPhone,
+  isFritzboxPhone,
   generateTopic,
   Device,
+  isShelly,
 } from "./Widget.utils";
 import { Subscription, map } from "rxjs";
 import PhoneInfo from "./widget/info/PhoneInfo";
@@ -19,6 +20,7 @@ import Button from "./Button";
 import Modal from "./Modal";
 import { phoneRing$ } from "./widget/info/PhoneInfo.ovservables";
 import PhoneHistory from "./widget/info/PhoneHistory";
+import WidgetDetails from "./widget/details/WidgetDetails";
 
 export interface IWidget {
   onClick?: () => void;
@@ -54,7 +56,7 @@ export default function Widget(props: IWidget) {
     );
     subscription.add(connected$.subscribe());
 
-    if (isPhone(config)) {
+    if (isFritzboxPhone(config)) {
       subscription.add(
         phoneRing$(mqtt!, config, (ring, phoneNumber) => {
           setPhoneNumber(ring ? phoneNumber : "");
@@ -77,12 +79,24 @@ export default function Widget(props: IWidget) {
   });
 
   const renderModal = () => {
-    if (isPhone(config)) {
+    if (isFritzboxPhone(config)) {
       return (
         <PhoneInfo
           config={config}
           mode="incomingCall"
           phoneNumber={phoneNumber()}
+        />
+      );
+    } else if (isShelly(config)) {
+      return (
+        <WidgetDetails
+          config={config}
+          values={{
+            connected: true,
+            uptime: 500,
+            state: "connecting",
+            value: 45,
+          }}
         />
       );
     }
@@ -122,7 +136,7 @@ export default function Widget(props: IWidget) {
   return (
     <>
       <div
-        onClick={() => !isPhone(config) && setModal(true)}
+        onClick={() => !isFritzboxPhone(config) && setModal(true)}
         classList={{
           [styles.widget]: true,
           [styles.info]: isInfo,
@@ -143,7 +157,7 @@ export default function Widget(props: IWidget) {
             <div class={styles.position}>{config.position}</div>
           </div>
           <div>
-            {isPhone(config) && <PhoneHistory config={config} />}
+            {isFritzboxPhone(config) && <PhoneHistory config={config} />}
             {!isInfo && <State state={state().state} value={state().value} />}
           </div>
         </div>

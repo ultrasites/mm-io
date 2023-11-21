@@ -16,4 +16,15 @@ export const defaultConfig: MMIO_Config = [
     type: "PHONE",
     device: "Fritzbox",
   } satisfies WidgetConfig<"PHONE", "Fritzbox">,
+  {
+    name: "Licht",
+    position: "links",
+    topics: {
+      command: "test",
+      connected: "connected",
+    },
+    id: "shelly-123",
+    type: "DIMMED_LIGHT",
+    device: "Shelly",
+  } satisfies WidgetConfig<"DIMMED_LIGHT", "Shelly">,
 ];

@@ -1,4 +1,4 @@
-import Icon, { IconMode } from "./Icon";
+import { IconMode } from "./Icon";
 import styles from "./Widget.module.css";
 import State from "./State";
 import { StateType } from "./State";
@@ -21,6 +21,7 @@ import Modal from "./Modal";
 import { phoneRing$ } from "./widget/info/PhoneInfo.ovservables";
 import PhoneHistory from "./widget/info/PhoneHistory";
 import WidgetDetails from "./widget/details/WidgetDetails";
+import WidgetHeader from "./widget/WidgetHeader";
 
 export interface IWidget {
   onClick?: () => void;
@@ -28,14 +29,14 @@ export interface IWidget {
 }
 
 export default function Widget(props: IWidget) {
-  const { mqtt, event } = useContext(AppContext);
+  const { mqtt } = useContext(AppContext);
   const subscription: Subscription = new Subscription();
 
   const isInfo = isInfoWidget(props.config.type);
   const config = props.config;
+  const id = `${props.config.name}-${props.config.type}-${props.config.device}`;
 
   const [connected, setConnected] = createSignal<IconMode>("warning");
-  const [modal, setModal] = createSignal<boolean>(false);
   const [state, setState] = createSignal<{ state: StateType; value?: string }>({
     state: "connecting",
   });
@@ -50,6 +51,12 @@ export default function Widget(props: IWidget) {
       })
     );
 
+  const showModal = () =>
+    (document.getElementById(id) as HTMLDialogElement).showModal();
+
+  const closeModal = () =>
+    (document.getElementById(id) as HTMLDialogElement).close();
+
   onMount(() => {
     Object.values(config.topics).map((topic) =>
       mqtt?.subscribe(generateTopic(config.id, topic))
@@ -60,15 +67,14 @@ export default function Widget(props: IWidget) {
       subscription.add(
         phoneRing$(mqtt!, config, (ring, phoneNumber) => {
           setPhoneNumber(ring ? phoneNumber : "");
-          setModal(ring);
+          if (ring) {
+            showModal();
+          } else {
+            closeModal();
+          }
         }).subscribe()
       );
     }
-
-    event?.on("showModal", (payload) => {
-      console.log(payload);
-      return setModal(payload);
-    });
   });
 
   onCleanup(() => {
@@ -136,7 +142,7 @@ export default function Widget(props: IWidget) {
   return (
     <>
       <div
-        onClick={() => !isFritzboxPhone(config) && setModal(true)}
+        onClick={() => !isFritzboxPhone(config) && showModal()}
         classList={{
           [styles.widget]: true,
           [styles.info]: isInfo,
@@ -149,13 +155,11 @@ export default function Widget(props: IWidget) {
             // [styles.actionContent]: !isInfo,
           }}
         >
-          <div>
-            <div>
-              {config.name}{" "}
-              <Icon icon="wifi" mode={connected()} style="solid" />
-            </div>
-            <div class={styles.position}>{config.position}</div>
-          </div>
+          <WidgetHeader
+            mode={connected()}
+            name={config.name}
+            position={config.position}
+          />
           <div>
             {isFritzboxPhone(config) && <PhoneHistory config={config} />}
             {!isInfo && <State state={state().state} value={state().value} />}
@@ -165,9 +169,7 @@ export default function Widget(props: IWidget) {
           <div class={styles.quickIncludes}>{renderQuickIncludes()}</div>
         )}
       </div>
-      {modal() && (
-        <Modal onClickBackground={() => setModal(false)}>{renderModal()}</Modal>
-      )}
+      <Modal id={id}>{renderModal()}</Modal>
     </>
   );
 }

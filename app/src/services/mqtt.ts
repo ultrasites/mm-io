@@ -48,6 +48,7 @@ export class MQTT {
     return this.messages$.pipe(
       filter(({ topic, message }) => topic === oTopic && message !== "NaN"),
       distinctUntilChanged((prev, cur) => prev.message === cur.message),
+      tap(console.log),
       map(({ message }) => (message ? JSON.parse(message) : message) as T)
     );
   }

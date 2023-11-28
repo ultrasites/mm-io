@@ -2,20 +2,19 @@ import { JSX } from "solid-js/jsx-runtime";
 import styles from "./Modal.module.css";
 
 export interface IModal {
-  onClickBackground: () => {};
   children: JSX.Element;
+  id: string;
 }
 
 export default function Modal(props: IModal) {
   return (
-    <div
-      onClick={(e) => {
-        e.stopImmediatePropagation();
-        return props.onClickBackground();
+    <dialog
+      id={props.id}
+      onClick={() => {
+        (document.getElementById(props.id) as HTMLDialogElement).close();
       }}
-      class={styles.background}
     >
       <div class={styles.content}>{props.children}</div>
-    </div>
+    </dialog>
   );
 }

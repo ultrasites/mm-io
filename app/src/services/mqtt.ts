@@ -35,10 +35,6 @@ export class MQTT {
     this.subscribedTopics.push(topic);
   }
 
-  publish(topic: string, message: string) {
-    this.client.publish(topic, message);
-  }
-
   unsubcribe(topic: string) {
     this.client.unsubscribe(topic);
     delete this.subscribedTopics[this.subscribedTopics.indexOf(topic)];

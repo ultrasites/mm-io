@@ -26,3 +26,11 @@ Your app is ready to be deployed!
 ## Deployment
 
 Learn more about deploying your application with the [documentations](https://vitejs.dev/guide/static-deploy.html)
+
+## Troubleshooting
+
+Shelly commands should fired over `mqtt.publish()`. But there was a troubleshooting on mqtt topics. The shellies read the last state on an undefined time.
+
+## More Info's
+
+[https://shelly.guide/webhooks-https-requests/](https://shelly.guide/webhooks-https-requests/)

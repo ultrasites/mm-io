@@ -1,14 +1,12 @@
-import { WidgetConfig, generateTopic } from "../../Widget.utils";
+import { generateTopic } from "../../../Widget.utils";
 import { For, createSignal, onCleanup, onMount, useContext } from "solid-js";
 import { Subscription, map } from "rxjs";
-import { AppContext } from "../../AppProvider";
+import { AppContext } from "../../../AppProvider";
 import styles from "./PhoneHistory.module.css";
-import {
-  phoneHistoryFromDTO,
-  type PhoneHistory,
-  type PhoneHistoryDTO,
-} from "./PhoneHistory.utils";
-import Icon from "../../Icon";
+import { phoneHistoryFromDTO } from "./PhoneHistory.utils";
+import type { PhoneHistory, PhoneHistoryDTO } from "./PhoneHistory.types";
+import Icon from "../../../Icon";
+import { WidgetConfig } from "../../../Widget.types";
 
 export interface IPhoneHistory {
   config: WidgetConfig<"PHONE", "Fritzbox">;
@@ -27,7 +25,11 @@ export default function PhoneHistory(props: IPhoneHistory) {
 
   const history$ = mqtt!
     .observe<PhoneHistoryDTO[]>(
-      generateTopic(props.config.id, props.config.topics.history)
+      generateTopic(
+        props.config.mqtt.id,
+        props.config.mqtt.topics.history,
+        props.config
+      )
     )
     .pipe(
       map((phoneHistory) =>

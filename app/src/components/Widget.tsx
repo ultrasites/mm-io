@@ -5,23 +5,23 @@ import { StateType } from "./State";
 import { createSignal, onCleanup, onMount, useContext } from "solid-js";
 import { AppContext } from "./AppProvider";
 import {
-  WidgetConfig,
-  WidgetType,
   isInfoWidget,
   isFritzboxPhone,
   generateTopic,
-  Device,
   isShelly,
 } from "./Widget.utils";
 import { Subscription, map } from "rxjs";
-import PhoneInfo from "./widget/info/PhoneInfo";
-import ToggleButton from "./ToggleButton";
-import Button from "./Button";
+import PhoneInfo from "./widget/info/fritzbox/PhoneInfo";
 import Modal from "./Modal";
-import { phoneRing$ } from "./widget/info/PhoneInfo.ovservables";
-import PhoneHistory from "./widget/info/PhoneHistory";
+import { phoneRing$ } from "./widget/info/fritzbox/PhoneInfo.observables";
+import PhoneHistory from "./widget/info/fritzbox/PhoneHistory";
 import WidgetDetails from "./widget/details/WidgetDetails";
 import WidgetHeader from "./widget/WidgetHeader";
+import { info$, status$ } from "./widget/info/shelly/Shelly.observables";
+import { ShellyInfo, StatusTypes } from "./widget/info/shelly/Shelly.types";
+import { isLightStatus } from "./widget/info/shelly/Shelly.utils";
+import { Device, WidgetConfig, WidgetType } from "./Widget.types";
+import WidgetQuickControls from "./WidgetQuickControls";
 
 export interface IWidget {
   onClick?: () => void;
@@ -34,16 +34,27 @@ export default function Widget(props: IWidget) {
 
   const isInfo = isInfoWidget(props.config.type);
   const config = props.config;
-  const id = `${props.config.name}-${props.config.type}-${props.config.device}`;
+  const id = `${props.config.name}-${props.config.type}-${props.config.device}-${props.config.mqtt.id}`;
 
   const [connected, setConnected] = createSignal<IconMode>("warning");
-  const [state, setState] = createSignal<{ state: StateType; value?: string }>({
+  const [state, setState] = createSignal<{
+    state: StateType;
+    value?: string;
+  }>({
     state: "connecting",
   });
   const [phoneNumber, setPhoneNumber] = createSignal<string>("");
+  const [shellyState, setShellyState] = createSignal<StatusTypes | undefined>(
+    undefined
+  );
+  const [shellyInfo, setShellyInfo] = createSignal<ShellyInfo | undefined>(
+    undefined
+  );
 
   const connected$ = mqtt!
-    .observe<boolean>(generateTopic(config.id, config.topics.connected))
+    .observe<boolean>(
+      generateTopic(config.mqtt.id, config.mqtt.topics.connected, config)
+    )
     .pipe(
       map((message) => {
         setConnected(message ? "success" : "error");
@@ -58,28 +69,56 @@ export default function Widget(props: IWidget) {
     (document.getElementById(id) as HTMLDialogElement).close();
 
   onMount(() => {
-    Object.values(config.topics).map((topic) =>
-      mqtt?.subscribe(generateTopic(config.id, topic))
+    Object.values(config.mqtt.topics).map((topic) =>
+      mqtt?.subscribe(generateTopic(config.mqtt.id, topic, config))
     );
     subscription.add(connected$.subscribe());
 
+    if (isShelly(config)) {
+      subscription.add(
+        status$<typeof config.type>(mqtt!, config).subscribe({
+          next: (status) => {
+            if (isLightStatus(status)) {
+              setState({
+                state: status.ison ? "on" : "off",
+                ...(status.ison && {
+                  value: `${status.brightness.toString()}%`,
+                }),
+              });
+            }
+            return setShellyState(status);
+          },
+        })
+      );
+
+      subscription.add(
+        info$<typeof config.type>(mqtt!, config).subscribe({
+          next: (info) => {
+            setShellyInfo(info as ShellyInfo);
+          },
+        })
+      );
+    }
+
     if (isFritzboxPhone(config)) {
       subscription.add(
-        phoneRing$(mqtt!, config, (ring, phoneNumber) => {
-          setPhoneNumber(ring ? phoneNumber : "");
-          if (ring) {
-            showModal();
-          } else {
-            closeModal();
-          }
-        }).subscribe()
+        phoneRing$(mqtt!, config).subscribe({
+          next: ([ring, phoneNumber]) => {
+            setPhoneNumber(ring ? phoneNumber : "");
+            if (ring) {
+              showModal();
+            } else {
+              closeModal();
+            }
+          },
+        })
       );
     }
   });
 
   onCleanup(() => {
-    Object.values(config.topics).map((topic) =>
-      mqtt?.unsubcribe(generateTopic(config.id, topic))
+    Object.values(config.mqtt.topics).map((topic) =>
+      mqtt?.unsubcribe(generateTopic(config.mqtt.id, topic, config))
     );
     subscription?.unsubscribe();
   });
@@ -93,49 +132,19 @@ export default function Widget(props: IWidget) {
           phoneNumber={phoneNumber()}
         />
       );
-    } else if (isShelly(config)) {
+    } else if (isShelly(config) && shellyState()) {
       return (
         <WidgetDetails
           config={config}
           values={{
-            connected: true,
-            uptime: 500,
-            state: "connecting",
-            value: 45,
+            connected: connected(),
+            uptime: shellyInfo()?.uptime,
+            state: state().state,
+            value: state().value,
+            shellyState: shellyState(),
           }}
         />
       );
-    }
-  };
-
-  const renderQuickIncludes = () => {
-    switch (config.type) {
-      case "PLUG":
-        return <ToggleButton onClick={async (_isActive) => {}} />;
-      case "SHUTTER":
-        return (
-          <>
-            <Button onClick={async () => {}}>
-              <i class="fa-chevron-up fa-solid" />
-            </Button>
-            <Button onClick={async () => {}}>
-              <i class="fa-chevron-down fa-solid" />
-            </Button>
-          </>
-        );
-      case "DIMMED_LIGHT":
-        return <ToggleButton onClick={async (_isActive) => {}} />;
-      case "GARAGE_GATE":
-        return (
-          <>
-            <Button onClick={async () => {}}>
-              <i class="fa-chevron-up fa-solid" />
-            </Button>
-            <Button onClick={async () => {}}>
-              <i class="fa-chevron-down fa-solid" />
-            </Button>
-          </>
-        );
     }
   };
 
@@ -151,8 +160,6 @@ export default function Widget(props: IWidget) {
         <div
           classList={{
             [styles.content]: true,
-            // [styles.infoContent]: isInfo,
-            // [styles.actionContent]: !isInfo,
           }}
         >
           <WidgetHeader
@@ -166,7 +173,9 @@ export default function Widget(props: IWidget) {
           </div>
         </div>
         {!isInfo && (
-          <div class={styles.quickIncludes}>{renderQuickIncludes()}</div>
+          <div class={styles.quickIncludes}>
+            <WidgetQuickControls config={config} state={shellyState()} />
+          </div>
         )}
       </div>
       <Modal id={id}>{renderModal()}</Modal>

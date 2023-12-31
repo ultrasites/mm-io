@@ -1,7 +1,8 @@
 import { useI18n } from "@amoutonbrady/solid-i18n";
-import Icon from "../../Icon";
+import Icon from "../../../Icon";
 import styles from "./PhoneInfo.module.css";
-import { WidgetConfig } from "../../Widget.utils";
+import {} from "../../../Widget.utils";
+import { WidgetConfig } from "../../../Widget.types";
 
 export interface IPhoneInfo {
   config: WidgetConfig<"PHONE", "Fritzbox">;

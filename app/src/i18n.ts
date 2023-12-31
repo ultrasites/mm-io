@@ -11,6 +11,8 @@ export const dictionary = {
     connecting: "verbinden",
     incomingCall: "Eingehender Anruf",
     activeCall: "Aktiver Anruf",
+    connectedSince: "Verbunden seit:",
+    hour: "Uhr"
   },
   en: {
     on: "on",
@@ -24,5 +26,7 @@ export const dictionary = {
     connecting: "connecting",
     incomingCall: "Incoming call",
     activeCall: "Active call",
+    connectedSince: "Connected since:",
+    hour: "Hour"
   },
 };

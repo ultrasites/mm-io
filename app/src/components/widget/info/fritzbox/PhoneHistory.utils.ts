@@ -1,19 +1,5 @@
 import * as dayjs from "dayjs";
-import customParseFormat from "dayjs/plugin/customParseFormat";
-
-dayjs.extend(customParseFormat);
-
-export interface PhoneHistoryDTO {
-  date: string;
-  externalNumber: string;
-  callSymbolColor: string;
-}
-
-export interface PhoneHistory {
-  date: string;
-  phoneNumber: string;
-  mode: "ingoing" | "outgoing";
-}
+import { PhoneHistoryDTO, PhoneHistory } from "./PhoneHistory.types";
 
 export const phoneHistoryFromDTO = (dto: PhoneHistoryDTO): PhoneHistory => ({
   mode: dto.callSymbolColor.includes("green") ? "ingoing" : "outgoing",
